@@ -2,6 +2,7 @@ package net.farkas.crouch_cushion;
 
 import com.mojang.logging.LogUtils;
 
+import net.farkas.crouch_cushion.event.ModForgeEvents;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -14,7 +15,7 @@ public class CrouchCushion {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CrouchCushion(FMLJavaModLoadingContext context) {
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ModForgeEvents.class);
 
         context.registerConfig(ModConfig.Type.SERVER, Config.SPEC);
     }
