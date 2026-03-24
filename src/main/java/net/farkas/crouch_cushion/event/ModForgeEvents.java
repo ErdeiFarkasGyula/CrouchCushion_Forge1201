@@ -48,17 +48,17 @@ public class ModForgeEvents {
                     if (duration <= window) {
                         double minMultiplier = Config.MIN_DAMAGE_MULTIPLIER.get();
 
-                        double progress = (double) duration / (double) window;
-                        double finalMultiplier = minMultiplier + (1.0 - minMultiplier) * progress;
-
+                        double baseMultiplier = minMultiplier;
                         if (Config.ENABLE_FALL_DISTANCE_SCALING.get()) {
-                            double fallDistance = player.fallDistance;
-                            double scalingFactor = Config.FALL_DISTANCE_SCALING_FACTOR.get();
-                            finalMultiplier += (fallDistance * scalingFactor);
+                            baseMultiplier += player.fallDistance * Config.FALL_DISTANCE_SCALING_FACTOR.get();
                         }
 
-                        if (finalMultiplier < 0.0) finalMultiplier = 0.0;
-                        if (finalMultiplier > 1.0) finalMultiplier = 1.0;
+                        baseMultiplier = Math.min(1.0, baseMultiplier);
+
+                        double progress = (double) duration / (double) window;
+                        double finalMultiplier = baseMultiplier + (1.0 - baseMultiplier) * progress;
+
+                        finalMultiplier = Math.max(0.0, Math.min(1.0, finalMultiplier));
 
                         event.setAmount((float) (event.getAmount() * finalMultiplier));
                     }
