@@ -16,6 +16,8 @@ public class ModForgeEvents {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (!Config.ENABLE_CUSHION.get()) return;
+
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide()) {
             Player player = event.player;
 
@@ -33,6 +35,8 @@ public class ModForgeEvents {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
+        if (!Config.ENABLE_CUSHION.get()) return;
+
         if (event.getEntity() instanceof Player player && !player.level().isClientSide()) {
             if (event.getSource().is(DamageTypes.FALL) && player.isCrouching()) {
                 if (player.getPersistentData().contains(CROUCH_START_TIME_TAG)) {
@@ -45,8 +49,13 @@ public class ModForgeEvents {
                         double minMultiplier = Config.MIN_DAMAGE_MULTIPLIER.get();
 
                         double progress = (double) duration / (double) window;
-
                         double finalMultiplier = minMultiplier + (1.0 - minMultiplier) * progress;
+
+                        if (Config.ENABLE_FALL_DISTANCE_SCALING.get()) {
+                            double fallDistance = player.fallDistance;
+                            double scalingFactor = Config.FALL_DISTANCE_SCALING_FACTOR.get();
+                            finalMultiplier += (fallDistance * scalingFactor);
+                        }
 
                         if (finalMultiplier < 0.0) finalMultiplier = 0.0;
                         if (finalMultiplier > 1.0) finalMultiplier = 1.0;
